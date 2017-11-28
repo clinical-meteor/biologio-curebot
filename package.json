@@ -1,20 +1,32 @@
 {
-  "name": "hello-chatconnector",
+  "name": "biologio-curebot",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "a bot for handling health questions and answers",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "azure-publish": "node publish.js"
   },
-  "author": "",
+  "keywords": [
+    "fhir",
+    "client"
+  ],
+  "author": "David Donohue <drdonohue@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dpdonohue/biologio-curebot.git"
+  },
   "dependencies": {
-    "botbuilder": "^3.8.4",
-    "restify": "^5.0.0"
+    "async": "^2.5.0",
+    "biolog_rules": "^1.0.0",
+    "botbuilder": "^3.9.1",
+    "mocha": "^3.5.0",
+    "restify": "^5.2.0"
   },
   "devDependencies": {
     "request": "^2.81.0",
-    "zip-folder": "^1.0.0"
+    "zip-folder": "^1.0.0",
+    "mocha": "^3.5.0"
   }
 }
