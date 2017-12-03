@@ -1,4 +1,4 @@
-const CureServer = require('./js/CureServer.js');
+const CureServer = require('./js/server/CureServer.js');
 module.exports = CureServer;
 
 // Setup Restify Server

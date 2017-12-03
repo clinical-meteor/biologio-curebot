@@ -5,9 +5,11 @@
 
     var builder = require('botbuilder');
     const Tester = require('./Tester');
-    const RuleBot = require('../js/RuleBot');
+    const RuleBot = require('../js/rules/RuleBot');
+    const Ruler = require('../js/rules/Ruler');
     const dialogOnboard = require('./dialog/dialog-onboard');
-    const rules = require('biolog_rules');
+    const GSheetImporter = require('../js/importer/GSheetImporter')
+    // const rules = require('biolog_rules');
 
     // luisMock.setup();
     
@@ -18,7 +20,7 @@
         let self = this;
         self.connector = new builder.ConsoleConnector();
         // Create chat bot
-        rules.GSheetImporter.connect((err, info) => {
+        GSheetImporter.connect((err, info) => {
           if (err) {
             console.error("GSheetImporter connect error", err);
             return done();
@@ -27,7 +29,7 @@
           //   console.log("GSheetImporter connected, info=", info);
           // }
           
-          rules.GSheetImporter.import(info, (err, json) => {
+          GSheetImporter.import(info, (err, json) => {
 
             if (err) {
               console.error("GSheetImporter import error", err);
@@ -37,7 +39,7 @@
             //   console.log("GSheetImporter imported, json=", json);
             // }
 
-            self.ruler = new rules.Ruler(json);
+            self.ruler = new Ruler(json);
             self.ruleBot = new RuleBot(self.connector, self.ruler);
             Tester.testBot(self.ruleBot.bot, dialogOnboard, done);
           });

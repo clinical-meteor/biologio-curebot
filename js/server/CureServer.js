@@ -1,8 +1,9 @@
 const restify = require('restify');
 const builder = require('botbuilder');
-const RuleBot = require('./RuleBot');
-const rules = require('biolog_rules');
-const ChatbotConfig = require('./config/ChatbotConfig.json');
+const Ruler = require('../rules/Ruler');
+const RuleBot = require('../rules/RuleBot');
+const ChatbotConfig = require('../../config/ChatbotConfig.json');
+const GSheetImporter = require('../importer/GSheetImporter');
 class CureServer {
 
     constructor(dbCallback) {
@@ -35,11 +36,29 @@ class CureServer {
         //     session.send("You said: %s", session.message.text);
         // });
 
-        // Create chat bot
-        rules.GSheetImporter.connect((err, json) => {
-            self.ruler = new Ruler(json);
-            this.ruleBot = new RuleBot(self.connector, self.ruler, dbConnector);
-        });
+        
+
+
+
+        GSheetImporter.connect((err, info) => {
+            if (err) {
+              console.error("GSheetImporter connect error", err);
+              return done();
+            }
+            // if (info) {
+            //   console.log("GSheetImporter connected, info=", info);
+            // }
+            
+            // Create chat bot
+            GSheetImporter.import(info, (err, json) => {
+                self.ruler = new Ruler(json);
+                this.ruleBot = new RuleBot(self.connector, self.ruler, dbCallback);
+            });
+          });
+
+
+
+          
     }
 
     stop() {

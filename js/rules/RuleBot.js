@@ -1,5 +1,5 @@
 const builder = require('botbuilder');
-const rules = require('biolog_rules');
+const Util = require('../util/Util');
 
 class RuleBot {
     // static ruler;
@@ -28,6 +28,7 @@ class RuleBot {
 
         this.bot.dialog("/converse", [
             (session) => {
+                
                 if (!session.userData.biolog) {
                     session.userData.biolog = {
                         admin: {
@@ -50,8 +51,10 @@ class RuleBot {
                     };
                 }
 
+                console.log('this.bot.dialog:converse', session.conversationData);
+
                 //TODO broadcast this message to any recipients
-                if (session.conversationData.biolog.admin.conversingWith != "bot") return;
+                if (session.conversationData.biolog.admin.conversingWith != "bot") return session.endConversation();
 
                 //if we already have a queue of questions to ask, use that.  
                 // Otherwise query for more questions.
@@ -59,6 +62,7 @@ class RuleBot {
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
                     qData = ruler.applyRules(session.userData.biolog.data);
+                    console.log("qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         //no further questions your honor
                         return session.endConversation();
@@ -85,7 +89,7 @@ class RuleBot {
                         let aChoiceObj = {};
                         if (choice.indexOf("=") > 0) { 
                             let choiceId = choice.substring(0, choice.indexOf("=")).trim();
-                            choiceId = rules.Util.safify(choiceId);
+                            choiceId = Util.safify(choiceId);
                             let choiceDisplay = choice.substring(choice.indexOf("=") + 1).trim();
                             aChoiceObj = {
                                 id: choiceId,
@@ -93,7 +97,7 @@ class RuleBot {
                             };
                         } else {
                             aChoiceObj = {
-                                id: rules.Util.safify(choice),
+                                id: Util.safify(choice),
                                 display: choice
                             };
                         }

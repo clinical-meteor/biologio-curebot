@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "biolog_rules": "^1.0.0",
     "botbuilder": "^3.9.1",
     "mocha": "^3.5.0",
     "restify": "^5.2.0"
