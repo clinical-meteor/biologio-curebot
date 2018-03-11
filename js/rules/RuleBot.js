@@ -51,19 +51,6 @@ class RuleBot {
                     };
                 }
 
-                // if (!session.userData.biolog) {
-                //     session.userData.biolog = {
-                //         admin: {
-                //             conversingWith: "bot"
-                //         },
-                //         qData: {
-                            
-                //         }
-                //     };
-                // }
-
-                // console.log('this.bot.dialog:converse', session.conversationData);
-
                 //TODO broadcast this message to any recipients
                 if (session.userData.biolog.admin.conversingWith != "bot") return session.endConversation();
 
@@ -76,6 +63,7 @@ class RuleBot {
                     // console.log("qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         //no further questions your honor
+                        session.send("I have no more questions.");
                         return session.endConversation();
                     }
                     session.userData.biolog.qData = qData;
@@ -135,6 +123,7 @@ class RuleBot {
                 // console.log("/converse: received", results.response);
                 let qData = session.userData.biolog.qData;
                 if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
+                    session.send("I have no more questions.");
                     return session.endDialog();
                 }
                 //Get the question we just asked
