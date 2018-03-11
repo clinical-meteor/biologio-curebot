@@ -62,6 +62,10 @@ module.exports = [
     },
     {
       in: /(How many medicines do you take regularly?)/,
-      out: "3 brah"
-    }
+      out: "3"
+    },
+    // {
+    //   in: /(How many medicines do you take regularly?)/,
+    //   out: "3"
+    // }
   ];

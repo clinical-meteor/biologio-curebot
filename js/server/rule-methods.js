@@ -1,3 +1,7 @@
+/**
+ * This is not in use
+ */
+
 Meteor.methods({
     /* save a rule */
     "biolog/saveRule": function (rule) {

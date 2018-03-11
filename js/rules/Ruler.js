@@ -84,7 +84,7 @@ class Ruler {
             if (Ruler.alreadyAsked(context, rule, question)) continue;
 
             let fn = this.functions[ri];
-            console.log("...Apply rule:" , rule.expression);
+            // console.log("...Apply rule:" , rule.expression);
             // console.log("...= fn:" , fn);
             try {
                 let result = fn(context);

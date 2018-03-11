@@ -18,7 +18,7 @@ class RuleBot {
 
         this.bot.dialog('/', [
             (session, results, next) => {
-                console.log("session.userData.biolog=", session.userData.biolog);
+                // console.log("session.userData.biolog=", session.userData.biolog);
                 // session.send('Welcome to Biolog, %s!', session.userData.biolog.name);
                 session.endDialog();
                 session.beginDialog('/converse');
@@ -36,44 +36,55 @@ class RuleBot {
                         },
                         data: {
                             answers: {}
-                        }
-                    };
-                }
-
-                if (!session.conversationData.biolog) {
-                    session.conversationData.biolog = {
+                        },
+                        subject: {
+                            id: session.message.user.id,
+                            name: session.message.user.name
+                        },
                         admin: {
                             conversingWith: "bot"
                         },
                         qData: {
-                            
+                            currentQuestion: {},
+                            queue: []
                         }
                     };
                 }
 
-                console.log('this.bot.dialog:converse', session.conversationData);
+                // if (!session.userData.biolog) {
+                //     session.userData.biolog = {
+                //         admin: {
+                //             conversingWith: "bot"
+                //         },
+                //         qData: {
+                            
+                //         }
+                //     };
+                // }
+
+                // console.log('this.bot.dialog:converse', session.conversationData);
 
                 //TODO broadcast this message to any recipients
-                if (session.conversationData.biolog.admin.conversingWith != "bot") return session.endConversation();
+                if (session.userData.biolog.admin.conversingWith != "bot") return session.endConversation();
 
                 //if we already have a queue of questions to ask, use that.  
                 // Otherwise query for more questions.
-                let qData = session.conversationData.biolog.qData;
+                let qData = session.userData.biolog.qData;
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
-                    console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
+                    // console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
                     qData = ruler.applyRules(session.userData.biolog.data);
-                    console.log("qData=", qData);
+                    // console.log("qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         //no further questions your honor
                         return session.endConversation();
                     }
-                    session.conversationData.qData = qData;
-                    console.log("Applied rules, results=", qData);
+                    session.userData.biolog.qData = qData;
+                    // console.log("Applied rules, results=", qData);
                 }
-
                 let qItem = qData.queue[0];
+                qData.currentQuestion = qData.questions[qItem.question];
                 let question = qData.questions[qItem.question];
-                console.log("Ask this question:", question);
+                // console.log("Ask this question:", question);
                 
                 if (question.formtype == "number") {
                     builder.Prompts.number(session, question.text);
@@ -103,7 +114,8 @@ class RuleBot {
                         }
                         choicesObj[aChoiceObj.display] = aChoiceObj; 
                     }
-                    session.conversationData.choices = choicesObj;
+                    qData.currentQuestion.choices = choicesObj;
+                    qData.questions[qItem.question].choices = choicesObj;
                     builder.Prompts.choice(session, question.text,
                     choicesObj,
                     { listStyle: builder.ListStyle.auto,
@@ -118,10 +130,10 @@ class RuleBot {
             (session, results) => {
                 
                 //TODO broadcast this message to any recipients
-                if (session.conversationData.biolog.admin.conversingWith != "bot") return;
+                if (session.userData.biolog.admin.conversingWith != "bot") return;
 
                 // console.log("/converse: received", results.response);
-                let qData = session.conversationData.qData;
+                let qData = session.userData.biolog.qData;
                 if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     return session.endDialog();
                 }
@@ -131,59 +143,67 @@ class RuleBot {
                 
                 var repeatThisQuestion = false;
 
+                // console.log("\n\n**********\nsession.userData=", JSON.stringify(session.userData, null, 2));
+                // console.log("\n\n**********\nsession.conversationData=", JSON.stringify(session.conversationData, null, 2));
+                // console.log("\n\n**********\nsession.message=", JSON.stringify(session.message, null, 2));
+                // console.log("\n");
                 //Store the answer.  TODO, parse the answer based on the question type
                 if (!session.userData.biolog.data.answers[question.id]) {
                     session.userData.biolog.data.answers[question.id] = {};
                 }
+                let answerObj = {};
                 //TODO support other question types
                 if (question.formtype == "choice") {
-                    let choices = session.conversationData.choices;
+                    let choices = session.userData.biolog.qData.currentQuestion.choices;
                     let selectedChoice = choices[results.response.entity];
                     //TODO throw an exceptin when we cannot find the choice object
                     if (!selectedChoice) selectedChoice = results.response.entity;
                     if (!selectedChoice) selectedChoice = results.response;
-                    session.userData.biolog.data.answers[question.id].latest = {
+                    answerObj = {
                         text: question.text,
                         val: selectedChoice.id,
                         date: new Date()
                     };
+                    session.userData.biolog.data.answers[question.id].latest = answerObj;
+                    if (dbCallback) dbCallback(session, answerObj);
                 } else if (question.formtype == "text") {
                     //validate?
                     var matchesOK = true;
                     if (question.regex) {
                         let regex = new RegExp(question.regex);
                         matchesOK = regex.test(results.response);
-                        console.log("Tested regexp: " + question.regex + " against string: '" + results.response + "' w/ result=" + matchesOK);
+                        // console.log("Tested regexp: " + question.regex + " against string: '" + results.response + "' w/ result=" + matchesOK);
                     } 
                     // console.log("matchesOK=", matchesOK);
                     if (matchesOK) {
-                        let answerObj = {
+                        answerObj = {
                             text: question.text,
                             val: results.response,
                             date: new Date()
                         };
                         session.userData.biolog.data.answers[question.id].latest = answerObj;
-                        //store the answer, update session.userData.biolog.answers[question.id].avg, .max, .min, etc.
-                        if (dbCallback) {
-                            //TODO only send identifier info?
-                            dbCallback(session, answerObj);
-                        }
+                        if (dbCallback) dbCallback(session, answerObj);
                     } else {
                         session.send("I did not understand your response.  Could you try again?");
                         // session.replaceDialog("/converse", { reprompt: true });
                         repeatThisQuestion = true;
                     }
                 } else {
-                    session.userData.biolog.data.answers[question.id].latest = {
+                    answerObj = {
                         text: question.text,
                         val: results.response,
                         date: new Date()
                     };
+                    session.userData.biolog.data.answers[question.id].latest = answerObj;
+                    if (dbCallback) dbCallback(session, answerObj);
                 }
 
                 //Remove the question from the queue
-                if (!repeatThisQuestion) qData.queue.shift();
-
+                if (!repeatThisQuestion) {
+                    qData.queue.shift();
+                    qData.currentQuestion = {};
+                    if (qData.queue.length > 0) qData.currentQuestion = qData.questions[qData.queue[0].question];
+                }
                 //loop back and do next item in queue
                 session.replaceDialog("/converse", { reprompt: true });
             }
@@ -196,7 +216,7 @@ class RuleBot {
      * @param {} type = bot or human
      */
     conversingWith(session, type) {
-        session.conversationData.biolog.admin.conversingWith = type;
+        session.userData.biolog.admin.conversingWith = type;
     }
 }
 

@@ -8,7 +8,8 @@
     const RuleBot = require('../js/rules/RuleBot');
     const Ruler = require('../js/rules/Ruler');
     const dialogOnboard = require('./dialog/dialog-onboard');
-    const GSheetImporter = require('../js/importer/GSheetImporter')
+    const GSheetImporter = require('../js/importer/GSheetImporter');
+    const DBUtil = require('../js/server/DBUtil');
     // const rules = require('biolog_rules');
 
     // luisMock.setup();
@@ -40,7 +41,7 @@
             // }
 
             self.ruler = new Ruler(json);
-            self.ruleBot = new RuleBot(self.connector, self.ruler);
+            self.ruleBot = new RuleBot(self.connector, self.ruler, DBUtil.saveCommunication);
             Tester.testBot(self.ruleBot.bot, dialogOnboard, done);
           });
         });
