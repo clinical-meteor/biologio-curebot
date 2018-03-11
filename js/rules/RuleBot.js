@@ -153,6 +153,7 @@ class RuleBot {
                 }
                 let answerObj = {};
                 //TODO support other question types
+                
                 if (question.formtype == "choice") {
                     let choices = session.userData.biolog.qData.currentQuestion.choices;
                     let selectedChoice = choices[results.response.entity];
@@ -195,6 +196,7 @@ class RuleBot {
                         date: new Date()
                     };
                     session.userData.biolog.data.answers[question.id].latest = answerObj;
+                    // console.log("\nStored answerObj=", answerObj);
                     if (dbCallback) dbCallback(session, answerObj);
                 }
 
