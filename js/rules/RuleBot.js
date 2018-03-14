@@ -27,8 +27,8 @@ class RuleBot {
         ]);
 
         this.bot.dialog("/converse", [
-            (session) => {
-                
+            (session, result, next) => {
+                // console.log("\n\n111111111111111111111");
                 if (!session.userData.biolog) {
                     session.userData.biolog = {
                         admin: {
@@ -56,15 +56,20 @@ class RuleBot {
 
                 //if we already have a queue of questions to ask, use that.  
                 // Otherwise query for more questions.
+                
                 let qData = session.userData.biolog.qData;
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     // console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
                     qData = ruler.applyRules(session.userData.biolog.data);
-                    // console.log("qData=", qData);
+                    // console.log("\n\n Applied rules. qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         //no further questions your honor
-                        session.send("I have no more questions.");
-                        return session.endConversation();
+                        // session.send("I have no more questions.");
+                        // console.log("queue is empty.  End conversation");
+                        // setTimeout(function() { session.endDialog(); }, 5000);
+                        // return;
+                        // return session.endDialog();
+                        return next();
                     }
                     session.userData.biolog.qData = qData;
                     // console.log("Applied rules, results=", qData);
@@ -104,29 +109,39 @@ class RuleBot {
                     }
                     qData.currentQuestion.choices = choicesObj;
                     qData.questions[qItem.question].choices = choicesObj;
+
+                    //TODO make it skippable
                     builder.Prompts.choice(session, question.text,
                     choicesObj,
                     { listStyle: builder.ListStyle.auto,
                         maxRetries: 1,
-                        retryPrompt:'Please select a number, or you can skip this question.' }
+                        retryPrompt:'Please select a number.' }
                 );
                 } else {
-                    builder.Prompts.text(session, question.text);
+                    if (question && question.text) builder.Prompts.text(session, question.text);
                 }
                 
             },
-            (session, results) => {
+            (session, results, next) => {
                 
+                // console.log("\n\n2222222222222222222222222");
                 //TODO broadcast this message to any recipients
-                if (session.userData.biolog.admin.conversingWith != "bot") return;
+                // if (session.userData.biolog.admin.conversingWith != "bot") return;
 
                 // console.log("/converse: received", results.response);
                 let qData = session.userData.biolog.qData;
-                if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
-                    session.send("I have no more questions.");
-                    return session.endDialog();
-                }
+                // if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
+                //     session.send("I have no more questions.");
+                //     return session.endDialog();
+                // }
                 //Get the question we just asked
+
+                if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
+                    //no further questions your honor
+                    session.send("I have no more questions.");
+                    return setTimeout(function() { next() }, 2000);
+                }
+
                 let qItem = qData.queue[0];
                 let question = qData.questions[qItem.question];
                 
@@ -192,9 +207,19 @@ class RuleBot {
                 //Remove the question from the queue
                 if (!repeatThisQuestion) {
                     qData.queue.shift();
+                    // console.log("\n\nSSSSSSSSSSSShifted to next question.  qData.queue=", qData.queue);
                     qData.currentQuestion = {};
                     if (qData.queue.length > 0) qData.currentQuestion = qData.questions[qData.queue[0].question];
                 }
+
+                //TODO broadcast this message to any recipients
+                if (session.userData.biolog.admin.conversingWith != "bot") return session.endDialog();
+
+                // if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
+                //     session.send("I have no more questions.");
+                //     return session.endDialog();
+                // }
+
                 //loop back and do next item in queue
                 session.replaceDialog("/converse", { reprompt: true });
             }

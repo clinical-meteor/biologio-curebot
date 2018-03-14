@@ -15,8 +15,9 @@ function testBot(bot, messages, done) {
           assert(false);
           done();
         }
-        setTimeout(function() { proceedNextStep(check, done)}, 1000)
-        // proceedNextStep(check, done);
+
+        proceedNextStep(check, done);
+        // setTimeout(function() {proceedNextStep(check, done)}, 4000);
       });
       
     } else {
@@ -55,17 +56,13 @@ function testBot(bot, messages, done) {
     }
   }
 
-  
-
-
   function proceedNextStep(check, done) {
-    
     if (check.out) {
       connector.processMessage(check.out);
     }
 
     if (step - 1 == messages.length) {
-      setTimeout(done, 3000); // Enable message from connector to appear in current test suite
+      setTimeout(done, 10); // Enable message from connector to appear in current test suite
     }
   }
 }

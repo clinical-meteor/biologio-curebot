@@ -57,15 +57,14 @@ class DBUtil {
             db.collection('communications_test1').insertOne(communicationResource, function(err, result) {
                 // assert.equal(err, null);
                 if (err) {
-                    console.error("ERROR inserting communication:", err);
+                    console.log("ERROR inserting communication:", err);
                     assert(false);
                     db.close();
                     return;
                 }
                 console.log("Inserted communicationResource=", JSON.stringify(communicationResource));
+                db.close();
             });
-            // console.log("Saved communication.\n\n");
-            db.close();
         });
     }
 }

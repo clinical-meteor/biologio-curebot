@@ -17,7 +17,7 @@
 
     describe('test-dialog', () => {
       it('dialog-onboard', function (done) { 
-        this.timeout(25000); 
+        this.timeout(60000); 
         let self = this;
         self.connector = new builder.ConsoleConnector();
         // Create chat bot

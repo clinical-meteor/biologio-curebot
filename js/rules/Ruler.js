@@ -72,7 +72,7 @@ class Ruler {
     }
 
     applyRules(context) {
-        console.log("Apply rules to:", context);
+        // console.log("Apply rules to:", context);
         let data = {
             results: [],
             questions: {},
