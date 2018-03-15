@@ -79,7 +79,7 @@ class RuleBot {
                 let question = qData.questions[qItem.question];
                 // console.log("Ask this question:", question);
                 
-                if (question.formtype == "number") {
+                if (question.formtype == "number" || question.formtype == "integer") {
                     builder.Prompts.number(session, question.text);
                 }
                 if (question.formtype == "confirm") {

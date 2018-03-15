@@ -49,6 +49,8 @@ class DBUtil {
             ]
         };
     
+        //TODO validate the Communication resource first
+        
         //save the Communication object
         console.log("\n\nDBUtil.js: Saving communication:", communicationResource);
         let mongoClient = MongoDB.MongoClient;
