@@ -28,7 +28,7 @@ class RuleBot {
 
         this.bot.dialog("/converse", [
             (session, result, next) => {
-                console.log("\n\n111111111111111111111");
+                console.log("\n\n111111111111111111111 incoming=", result);
                 if (!session.userData.biolog) {
                     session.userData.biolog = {
                         admin: {
@@ -124,7 +124,7 @@ class RuleBot {
             },
             (session, results, next) => {
                 
-                console.log("\n\n2222222222222222222222222");
+                console.log("\n\n2222222222222222222222222 incoming=", results);
                 //TODO broadcast this message to any recipients
                 // if (session.userData.biolog.admin.conversingWith != "bot") return;
 
@@ -135,6 +135,12 @@ class RuleBot {
                 //     return session.endDialog();
                 // }
                 //Get the question we just asked
+
+                let refresh = results && results.response && result.tesponse == "hello CureBot";
+                if (refresh) {
+                    session.userData.biolog = {};
+                    return session.replaceDialog("/converse", { reprompt: true });
+                }
 
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     //no further questions your honor
