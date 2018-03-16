@@ -1,5 +1,5 @@
-const CureServer = require('./js/CureServer.js');
-const DBUtil = require('.js/server/DBUtil');
+const CureServer = require('./js/server/CureServer.js');
+const DBUtil = require('./js/server/DBUtil');
 
 module.exports = CureServer;
 

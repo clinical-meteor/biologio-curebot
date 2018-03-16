@@ -136,7 +136,7 @@ class RuleBot {
                 // }
                 //Get the question we just asked
 
-                let refresh = results && results.response && result.tesponse == "hello CureBot";
+                let refresh = (results && results.response && results.response == "hello CureBot");
                 if (refresh) {
                     session.userData.biolog = {};
                     return session.replaceDialog("/converse", { reprompt: true });
