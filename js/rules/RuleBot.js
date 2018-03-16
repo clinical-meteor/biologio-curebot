@@ -28,7 +28,7 @@ class RuleBot {
 
         this.bot.dialog("/converse", [
             (session, result, next) => {
-                // console.log("\n\n111111111111111111111");
+                console.log("\n\n111111111111111111111");
                 if (!session.userData.biolog) {
                     session.userData.biolog = {
                         admin: {
@@ -61,7 +61,7 @@ class RuleBot {
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     // console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
                     qData = ruler.applyRules(session.userData.biolog.data);
-                    // console.log("\n\n Applied rules. qData=", qData);
+                    console.log("\n\n Applied rules. qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         //no further questions your honor
                         // session.send("I have no more questions.");
@@ -124,7 +124,7 @@ class RuleBot {
             },
             (session, results, next) => {
                 
-                // console.log("\n\n2222222222222222222222222");
+                console.log("\n\n2222222222222222222222222");
                 //TODO broadcast this message to any recipients
                 // if (session.userData.biolog.admin.conversingWith != "bot") return;
 
@@ -147,6 +147,7 @@ class RuleBot {
                 
                 var repeatThisQuestion = false;
 
+                console.log("\nQQQQQ Question=", question);
                 // console.log("\n\n**********\nsession.userData=", JSON.stringify(session.userData, null, 2));
                 // console.log("\n\n**********\nsession.conversationData=", JSON.stringify(session.conversationData, null, 2));
                 // console.log("\n\n**********\nsession.message=", JSON.stringify(session.message, null, 2));
@@ -199,6 +200,7 @@ class RuleBot {
                         val: results.response,
                         date: new Date()
                     };
+                    console.log("OTHER formtype.  Insert answerObj=", answerObj);
                     session.userData.biolog.data.answers[question.id].latest = answerObj;
                     // console.log("\nStored answerObj=", answerObj);
                     if (dbCallback) dbCallback(session, answerObj);
@@ -207,7 +209,7 @@ class RuleBot {
                 //Remove the question from the queue
                 if (!repeatThisQuestion) {
                     qData.queue.shift();
-                    // console.log("\n\nSSSSSSSSSSSShifted to next question.  qData.queue=", qData.queue);
+                    console.log("\n\nSSSSSSSSSSSShifted to next question.  qData.queue=", qData.queue);
                     qData.currentQuestion = {};
                     if (qData.queue.length > 0) qData.currentQuestion = qData.questions[qData.queue[0].question];
                 }
