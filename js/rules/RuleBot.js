@@ -18,18 +18,26 @@ class RuleBot {
 
         this.bot.dialog('/', [
             (session, results, next) => {
+                // console.log("\n\n000000000000000000 incoming=", session.message);
                 // console.log("session.userData.biolog=", session.userData.biolog);
                 // session.send('Welcome to Biolog, %s!', session.userData.biolog.name);
                 session.endDialog();
+
+                // let refresh = (results && results.response && results.response + '' == "Hi bot");
+                // if (refresh) {
+                //     session.userData.biolog = {};
+                //     // return session.replaceDialog("/converse", { reprompt: true });
+                // }
+
                 session.beginDialog('/converse');
                 // this.converse(session);
             }
         ]);
 
         this.bot.dialog("/converse", [
-            (session, result, next) => {
-                console.log("\n\n111111111111111111111 incoming=", result);
-                if (!session.userData.biolog) {
+            (session, results, next) => {
+                console.log("\n\n111111111111111111111 incoming=", session.message);
+                if (!session.userData.biolog || !session.userData.biolog.admin) {
                     session.userData.biolog = {
                         admin: {
                             botPaused: false
@@ -54,6 +62,11 @@ class RuleBot {
                 //TODO broadcast this message to any recipients
                 if (session.userData.biolog.admin.conversingWith != "bot") return session.endConversation();
 
+                // let refresh = (results && results.response && results.response == "Hi bot");
+                // if (refresh) {
+                //     session.userData.biolog = {};
+                //     // return session.replaceDialog("/converse", { reprompt: true });
+                // }
                 //if we already have a queue of questions to ask, use that.  
                 // Otherwise query for more questions.
                 
@@ -86,8 +99,9 @@ class RuleBot {
                     builder.Prompts.confirm(session, question.text);
                 }
                 if (question.formtype == "choice") {
+                    let choicesStr = question.choices += '';
                     let choicesObj = {};
-                    let choices = question.choices.split(";");
+                    let choices = question.choicesStr.split(";");
                     for (let i in choices) {
                         let choice = choices[i];
                         let aChoiceObj = {};
@@ -124,7 +138,7 @@ class RuleBot {
             },
             (session, results, next) => {
                 
-                console.log("\n\n2222222222222222222222222 incoming=", results);
+                console.log("\n\n2222222222222222222222222 incoming=", session.message);
                 //TODO broadcast this message to any recipients
                 // if (session.userData.biolog.admin.conversingWith != "bot") return;
 
@@ -136,9 +150,27 @@ class RuleBot {
                 // }
                 //Get the question we just asked
 
-                let refresh = (results && results.response && results.response == "hello CureBot");
+                let refresh = (session && session.message && session.message.text == "hi bot");
                 if (refresh) {
-                    session.userData.biolog = {};
+                    session.userData.biolog = {
+                        admin: {
+                            botPaused: false
+                        },
+                        data: {
+                            answers: {}
+                        },
+                        subject: {
+                            id: session.message.user.id,
+                            name: session.message.user.name
+                        },
+                        admin: {
+                            conversingWith: "bot"
+                        },
+                        qData: {
+                            currentQuestion: {},
+                            queue: []
+                        }
+                    };
                     return session.replaceDialog("/converse", { reprompt: true });
                 }
 
