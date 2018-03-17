@@ -72,7 +72,7 @@ class Ruler {
     }
 
     applyRules(context) {
-        // console.log("Apply rules to:", context);
+        console.log("\n\nAAAAAAAAA Apply rules to:", JSON.stringify(context, null, 2));
         let data = {
             results: [],
             questions: {},
@@ -84,7 +84,7 @@ class Ruler {
             if (Ruler.alreadyAsked(context, rule, question)) continue;
 
             let fn = this.functions[ri];
-            // console.log("...Apply rule:" , rule.expression);
+            console.log("\n...Apply rule:" , JSON.stringify(rule, null, 2));
             // console.log("...= fn:" , fn);
             try {
                 let result = fn(context);

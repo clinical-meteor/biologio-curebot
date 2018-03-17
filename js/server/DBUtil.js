@@ -11,7 +11,7 @@ class DBUtil {
         let communicationResource = {
             resourceType: "Communication",
             identifier: [{value: Util.randomString(16)}],
-            basedOn: [{reference: ""}],
+            // basedOn: [{reference: ""}],
             partOf: [{reference: session.message.address.conversation.id}],
             status: "completed",
             medium: [

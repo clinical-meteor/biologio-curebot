@@ -37,6 +37,10 @@ class RuleBot {
         this.bot.dialog("/converse", [
             (session, results, next) => {
                 console.log("\n\n111111111111111111111 incoming=", session.message);
+
+                let refresh = (session && session.message && session.message.text == "hi bot");
+                if (refresh) session.userData.biolog = {};
+
                 if (!session.userData.biolog || !session.userData.biolog.admin) {
                     session.userData.biolog = {
                         admin: {
@@ -99,11 +103,11 @@ class RuleBot {
                     builder.Prompts.confirm(session, question.text);
                 }
                 if (question.formtype == "choice") {
-                    let choicesStr = question.choices += '';
+                    let choicesStr = question.choices + '';
                     let choicesObj = {};
-                    let choices = question.choicesStr.split(";");
+                    let choices = choicesStr.split(";");
                     for (let i in choices) {
-                        let choice = choices[i];
+                        let choice = choices[i] + '';
                         let aChoiceObj = {};
                         if (choice.indexOf("=") > 0) { 
                             let choiceId = choice.substring(0, choice.indexOf("=")).trim();
@@ -121,16 +125,18 @@ class RuleBot {
                         }
                         choicesObj[aChoiceObj.display] = aChoiceObj; 
                     }
-                    qData.currentQuestion.choices = choicesObj;
-                    qData.questions[qItem.question].choices = choicesObj;
+                    qData.currentQuestion.choicesArray = choicesObj;
+                    qData.questions[qItem.question].choicesArray = choicesObj;
+
+                    // console.log("choicesObj=" , choicesObj);
 
                     //TODO make it skippable
                     builder.Prompts.choice(session, question.text,
-                    choicesObj,
-                    { listStyle: builder.ListStyle.auto,
-                        maxRetries: 1,
-                        retryPrompt:'Please select a number.' }
-                );
+                        choicesObj,
+                        { listStyle: builder.ListStyle.auto,
+                            maxRetries: 1,
+                            retryPrompt:'Please select a number.' }
+                    );
                 } else {
                     if (question && question.text) builder.Prompts.text(session, question.text);
                 }
@@ -141,6 +147,7 @@ class RuleBot {
                 console.log("\n\n2222222222222222222222222 incoming=", session.message);
                 //TODO broadcast this message to any recipients
                 // if (session.userData.biolog.admin.conversingWith != "bot") return;
+
 
                 // console.log("/converse: received", results.response);
                 let qData = session.userData.biolog.qData;
@@ -198,30 +205,42 @@ class RuleBot {
                 //TODO support other question types
                 
                 if (question.formtype == "choice") {
-                    let choices = session.userData.biolog.qData.currentQuestion.choices;
-                    let selectedChoice = choices[results.response.entity];
-                    //TODO throw an exceptin when we cannot find the choice object
-                    if (!selectedChoice) selectedChoice = results.response.entity;
-                    if (!selectedChoice) selectedChoice = results.response;
-                    answerObj = {
-                        text: question.text,
-                        val: selectedChoice.id,
-                        date: new Date()
-                    };
-                    session.userData.biolog.data.answers[question.id].latest = answerObj;
-                    if (dbCallback) dbCallback(session, answerObj);
+                    let choices = session.userData.biolog.qData.currentQuestion.choicesArray;
+                    let reply = session.message.text + '';
+                    if (results.response && results.response.entity) reply = results.response.entity;
+                    if (reply) {
+                        let selectedChoice = choices[reply];
+                        //TODO throw an exceptin when we cannot find the choice object
+                        // if (!selectedChoice && results.response && results.response.entity) selectedChoice = results.response.entity;
+                        // if (!selectedChoice && results.response) selectedChoice = results.response;
+                        if (selectedChoice) {
+                            answerObj = {
+                                text: question.text,
+                                val: selectedChoice.id,
+                                date: new Date()
+                            };
+                            session.userData.biolog.data.answers[question.id].latest = answerObj;
+                            if (dbCallback) dbCallback(session, answerObj);
+                        } else {
+                            repeatThisQuestion = true;
+                        }
+                    }
+                    
                 } else if (question.formtype == "text") {
                     //validate?
+                    let reply = session.message.text;
+                    if (results.response) reply = results.response;
+
                     var matchesOK = true;
                     if (question.regex) {
                         let regex = new RegExp(question.regex);
-                        matchesOK = regex.test(results.response);
+                        matchesOK = regex.test(reply);
                         // console.log("Tested regexp: " + question.regex + " against string: '" + results.response + "' w/ result=" + matchesOK);
                     } 
                     // console.log("matchesOK=", matchesOK);
                     if (matchesOK) {
                         answerObj = {
-                            text: question.text,
+                            text: reply,
                             val: results.response,
                             date: new Date()
                         };
@@ -233,9 +252,11 @@ class RuleBot {
                         repeatThisQuestion = true;
                     }
                 } else {
+                    let reply = session.message.text;
+                    if (results.response) reply = results.response;
                     answerObj = {
                         text: question.text,
-                        val: results.response,
+                        val: reply,
                         date: new Date()
                     };
                     console.log("OTHER formtype.  Insert answerObj=", answerObj);
