@@ -1,9 +1,9 @@
 const CureServer = require('./js/server/CureServer.js');
 const DBUtil = require('./js/server/DBUtil');
 
-module.exports = CureServer;
+// module.exports = CureServer;
 
 // Setup Restify Server
 var server = new CureServer(DBUtil.saveCommunication);
 
-console.log("biologio-curebot: created new CureServer");
+// console.log("biologio-curebot: created new CureServer");
