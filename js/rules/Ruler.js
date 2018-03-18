@@ -72,7 +72,7 @@ class Ruler {
     }
 
     applyRules(context) {
-        console.log("\n\nAAAAAAAAA Apply rules to:", JSON.stringify(context, null, 2));
+        // console.log("\n\nAAAAAAAAA Apply rules to:", JSON.stringify(context, null, 2));
         let data = {
             results: [],
             questions: {},
