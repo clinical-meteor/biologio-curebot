@@ -20,6 +20,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "botbuilder": "^3.9.1",
+    "botbuilder-azure": "^3.0.4",
     "fhir-schemas": "^0.3.2",
     "google-spreadsheet": "^2.0.4",
     "mocha": "^3.5.0",

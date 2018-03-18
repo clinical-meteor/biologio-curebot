@@ -5,5 +5,11 @@
     "localUrl": "http://localhost:3978/api/messages",
     "remoteUrl": "https://biologio-curebot-upgrade.azurewebsites.net/api/messages",
     "mongoDBUrl": "mongodb://biologio-cosmodb:qkQ73megBo6DL0z1efbwI3Nuw8m6SyREvbMT9Imfzx31UfjBsHwJrpeLkp4ON0ZjLfyV4iLxVkC8z2gA4yNFeQ==@biologio-cosmodb.documents.azure.com:10255/?ssl=true",
-    "spreadsheetId": "1mZekV8huG06nUclz68GyeEHLZR3AdDK12k36cT0G2p4"
+    "spreadsheetId": "1mZekV8huG06nUclz68GyeEHLZR3AdDK12k36cT0G2p4",
+    "documentDbOptions": {
+        "host": "https://biologio-sqldb.documents.azure.com:443/", 
+        "masterKey": "QVoUvssF7uz8cTscRZSROr90zpVujlMmYkluiUL6fpka7uTkYbUWzChhgPaohPBypSv7wQIulzf15vwBpTzpcA==", 
+        "database": "botdocs",   
+        "collection": "botdata"
+    }
 }

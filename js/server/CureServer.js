@@ -4,9 +4,12 @@ const Ruler = require('../rules/Ruler');
 const RuleBot = require('../rules/RuleBot');
 const ChatbotConfig = require('../../config/ChatbotConfig.json');
 const GSheetImporter = require('../importer/GSheetImporter');
+
+
 class CureServer {
 
     constructor(dbCallback) {
+
         let self = this;
         // Setup Restify Server
         self.server = restify.createServer();

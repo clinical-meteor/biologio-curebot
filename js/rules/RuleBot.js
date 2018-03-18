@@ -1,12 +1,17 @@
 const builder = require('botbuilder');
 const Util = require('../util/Util');
+const ChatbotConfig = require('../../config/ChatbotConfig.json');
+var azure = require('botbuilder-azure'); 
 
 class RuleBot {
     // static ruler;
     constructor(connector, ruler, dbCallback) {
+        var docDbClient = new azure.DocumentDbClient(ChatbotConfig.documentDbOptions);
+        var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
+
         let self = this;
         // if (!RuleBot.ruler) ruler = ruler;
-        this.bot = new builder.UniversalBot(connector);
+        this.bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);
         // this.queue = [];
         // this.bot.beginDialog('hi');
 
