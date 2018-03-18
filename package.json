@@ -1,8 +1,8 @@
 {
   "name": "biologio-curebot",
-  "version": "1.0.0",
-  "description": "a bot for handling health questions and answers",
-  "main": "app.js",
+  "version": "1.0.1",
+  "description": "a bot to deliver healthy checklist-driven questions and answers",
+  "main": "index.js",
   "scripts": {
     "test": "mocha",
     "azure-publish": "node publish.js"
