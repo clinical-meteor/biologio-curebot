@@ -39,7 +39,7 @@ class RuleBot {
                 if (!session.userData.biolog || !session.userData.biolog.admin) {
                     this.restartConversation(session);
                 }
-                if (this.settings.refresh) {
+                if (this.settings && this.settings.refresh) {
                     this.settings.refresh = false;
                     this.restartConversation(session);
                 }
@@ -134,7 +134,7 @@ class RuleBot {
                 let qData = session.userData.biolog.qData;
 
                 let refresh = (session && session.message && session.message.text == "hi bot");
-                if (refresh || this.settings.refresh) {
+                if (refresh || (this.settings && this.settings.refresh)) {
                     this.settings.refresh = false;
                     this.restartConversation(session);
                     return session.replaceDialog("/converse", { reprompt: true });
