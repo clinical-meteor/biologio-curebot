@@ -41,7 +41,7 @@
             // }
 
             self.ruler = new Ruler(json);
-            self.ruleBot = new RuleBot(self.connector, self.ruler, DBUtil.saveCommunication);
+            self.ruleBot = new RuleBot(self.connector, self.ruler, DBUtil.saveCommunication, {refresh: true});
             Tester.testBot(self.ruleBot.bot, dialogOnboard, done);
           });
         });

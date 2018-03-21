@@ -6,9 +6,36 @@ const assert = require('assert');
 
 class DBUtil {
     
-    static saveCommunication(session, communication) {
+    static saveCommunication(session, messageInfo) {
+        if (messageInfo.received) {
+            messageInfo.sent = new Date().toISOString();
+            // messageInfo.received = new Date(messageInfo.received).toISOString();
+        }
+        if (messageInfo.sent) {
+            messageInfo.received = new Date().toISOString();
+            // messageInfo.sent = new Date(messageInfo.sent).toISOString();
+        }
+        let sender = {
+            reference: ChatbotConfig.appName
+        };
+        if (messageInfo.type == "in") {
+            sender = {
+                reference: session.message.user.id,
+                display: session.message.user.name
+            };
+        }
+        let recipient = {
+            reference: ChatbotConfig.appName
+        };
+        if (messageInfo.type == "out") {
+            recipient = [{
+                reference: session.message.user.id,
+                display: session.message.user.name
+            }];
+        }
         // console.log("DBUtil.js: save communication:", communication);
         let communicationResource = {
+            _id: Util.randomString(24),
             resourceType: "Communication",
             identifier: [{value: Util.randomString(16)}],
             // basedOn: [{reference: ""}],
@@ -29,23 +56,16 @@ class DBUtil {
             subject: {
                 reference: session.userData.biolog.subject.id
             },
-            recipient: [
-                {
-                    reference: session.message.user.id,
-                    display: session.message.user.name
-                }
-            ],
+            recipient: recipient,
             context: {
                 reference: session.userData.biolog.qData.currentQuestion.id,
                 display: session.userData.biolog.qData.currentQuestion.text,
             },
-            sent: session.message.timestamp,
-            received: new Date().toISOString(),
-            sender: {
-                reference: ChatbotConfig.appName
-            },
+            sent: messageInfo.sent,
+            received: messageInfo.received,
+            sender: sender,
             payload: [
-                { contentString: session.message.text }
+                { contentString: messageInfo.text }
             ]
         };
     
@@ -69,6 +89,8 @@ class DBUtil {
             });
         });
     }
+
+    
 }
 
 module.exports = DBUtil;
