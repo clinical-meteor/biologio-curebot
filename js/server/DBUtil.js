@@ -50,7 +50,8 @@ class DBUtil {
                 //     display: "electronic"
                 //     }
                 // ],
-                text: session.message.channelId
+                    text: session.message.channelId,
+                    obj: session.message
                 }
             ],
             subject: {

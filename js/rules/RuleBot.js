@@ -32,7 +32,7 @@ class RuleBot {
 
         this.bot.dialog("/converse", [
             (session, results, next) => {
-                console.log("\n\n111111111111111111111 this.settings=", this.settings);
+                // console.log("\n\n111111111111111111111 this.settings=", this.settings);
 
                 
                 if (session && session.message && session.message.text == "hi bot") session.userData.biolog = {};
@@ -51,7 +51,7 @@ class RuleBot {
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     // console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
                     qData = ruler.applyRules(session.userData.biolog.data);
-                    console.log("\n\n AAAAAAAAAAAAAAAAAA Applied rules. qData=", qData);
+                    // console.log("\n\n AAAAAAAAAAAAAAAAAA Applied rules. qData=", qData);
                     if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                         return next();
                     }
@@ -129,7 +129,7 @@ class RuleBot {
             },
             (session, results, next) => {
                 
-                console.log("\n\n2222222222222222222222222 session.userData.biolog.data=", JSON.stringify(session.userData.biolog.data));
+                // console.log("\n\n2222222222222222222222222 session.userData.biolog.data=", JSON.stringify(session.userData.biolog.data));
                 // console.log("/converse: received", results.response);
                 let qData = session.userData.biolog.qData;
 
