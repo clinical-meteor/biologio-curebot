@@ -2,6 +2,9 @@
 https://portal.azure.com
 dd@daviddonohue.com
 
+##. View Logs
+https://biologio-curebot-upgrade.scm.azurewebsites.net/DebugConsole
+
 ## Use Azure app service editor
 
 1. make code change in the online editor
