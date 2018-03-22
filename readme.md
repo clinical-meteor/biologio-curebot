@@ -68,6 +68,44 @@ session.message= {
   }
 }
 
+
+			{
+				"type" : "message",
+				"timestamp" : "2018-03-22T02:03:12.254366Z",
+				"textFormat" : "plain",
+				"text" : "1",
+				"textLocale" : "en",
+				"sourceEvent" : {
+					"clientActivityId" : "1521684174885.5907588439178666.2"
+				},
+				"attachments" : [ ],
+				"entities" : [ ],
+				"address" : {
+					"id" : "13fdccddc0d748e18211dc4b4e6c84ca|0000002",
+					"channelId" : "webchat",
+					"user" : {
+						"id" : "TpSroKgUJG",
+						"name" : "You"
+					},
+					"conversation" : {
+						"id" : "13fdccddc0d748e18211dc4b4e6c84ca"
+					},
+					"bot" : {
+						"id" : "biologio-curebot@MSvcmR0jdbM",
+						"name" : "biologio-curebot-bot"
+					},
+					"serviceUrl" : "https://webchat.botframework.com/"
+				},
+				"source" : "webchat",
+				"agent" : "botbuilder",
+				"user" : {
+					"id" : "TpSroKgUJG",
+					"name" : "You"
+				}
+			}
+		}
+	],
+
 ```
 
 ## Populate session.userData fields for storage:

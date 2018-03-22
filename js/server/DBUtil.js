@@ -38,7 +38,10 @@ class DBUtil {
             _id: Util.randomString(24),
             resourceType: "Communication",
             identifier: [{value: Util.randomString(16)}],
-            // basedOn: [{reference: ""}],
+            basedOn: [{
+                reference: session.message.address.user.id, 
+                display: session.message.address.user.name
+            }],
             partOf: [{reference: session.message.address.conversation.id}],
             status: "completed",
             medium: [
@@ -50,8 +53,8 @@ class DBUtil {
                 //     display: "electronic"
                 //     }
                 // ],
-                    text: session.message.channelId,
-                    obj: session.message
+                    text: session.message.address.channelId
+                    // obj: session.message
                 }
             ],
             subject: {
