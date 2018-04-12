@@ -2,7 +2,12 @@
 https://portal.azure.com
 dd@daviddonohue.com
 
-##. View Logs
+## Run unit tests
+```
+npm test
+```
+
+##. View Logs on Azure
 https://biologio-curebot-upgrade.scm.azurewebsites.net/DebugConsole
 
 ## Use Azure app service editor
