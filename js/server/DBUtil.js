@@ -80,7 +80,7 @@ class DBUtil {
         let mongoClient = MongoDB.MongoClient;
         mongoClient.connect(ChatbotConfig.mongoDBUrl, function (err, db) {
             if (err) return console.error("Error connecting to DB", err);
-            db.collection('communications').insertOne(communicationResource, function(err, result) {
+            db.collection('Communications').insertOne(communicationResource, function(err, result) {
                 // assert.equal(err, null);
                 if (err) {
                     console.log("ERROR inserting communication:", err);
