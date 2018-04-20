@@ -24,9 +24,10 @@ class DBUtil {
                 display: session.message.user.name
             };
         }
-        let recipient = {
-            reference: ChatbotConfig.appName
-        };
+        let recipient = [{
+            reference: ChatbotConfig.appName,
+            display: ChatbotConfig.appTitle
+        }];
         if (messageInfo.type == "out") {
             recipient = [{
                 reference: session.message.user.id,
@@ -58,7 +59,8 @@ class DBUtil {
                 }
             ],
             subject: {
-                reference: session.userData.biolog.subject.id
+                reference: session.userData.biolog.subject.id,
+                display: session.userData.biolog.subject.name
             },
             recipient: recipient,
             context: {
