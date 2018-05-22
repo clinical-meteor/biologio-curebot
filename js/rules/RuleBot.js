@@ -14,14 +14,6 @@ class RuleBot {
         let self = this;
         // if (!RuleBot.ruler) ruler = ruler;
         this.bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);
-        // this.queue = [];
-        // this.bot.beginDialog('hi');
-
-        // this.bot.dialog('hi', [
-        //     (session, results) => {
-        //         builder.Prompts.text(session, 'hi client');
-        //     }
-        // ])
 
         this.bot.dialog('/', [
             (session, results, next) => {
@@ -69,6 +61,7 @@ class RuleBot {
                 };
 
                 if (question.formtype == "number" || question.formtype == "integer") {
+                    console.log("################ formtype=", question.formtype);
                     if (dbCallback) dbCallback(session, qObj);
                     builder.Prompts.number(session, question.text);
                 }
@@ -130,7 +123,6 @@ class RuleBot {
             (session, results, next) => {
                 
                 // console.log("\n\n2222222222222222222222222 session.userData.biolog.data=", JSON.stringify(session.userData.biolog.data));
-                // console.log("/converse: received", results.response);
                 let qData = session.userData.biolog.qData;
 
                 let refresh = (session && session.message && session.message.text == "hi bot");
@@ -145,9 +137,6 @@ class RuleBot {
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     //no further questions your honor
                     session.send("I have no more questions.");
-                    // return setTimeout(function() { next() }, 2000);
-                    // return session.endConversation();
-                    // return next();
                     return setTimeout(function() { session.endConversation() }, 2000);
                 }
 
@@ -156,12 +145,6 @@ class RuleBot {
                 
                 var repeatThisQuestion = false;
 
-                // console.log("\nQQQQQ Question=", question);
-                // console.log("\n\n**********\nsession.userData=", JSON.stringify(session.userData, null, 2));
-                // console.log("\n\n**********\nsession.conversationData=", JSON.stringify(session.conversationData, null, 2));
-                // console.log("\n\n**********\nsession.message=", JSON.stringify(session.message, null, 2));
-                // console.log("\n");
-                //Store the answer.  TODO, parse the answer based on the question type
                 if (!session.userData.biolog.data.answers[question.id]) {
                     session.userData.biolog.data.answers[question.id] = {};
                 }
@@ -231,11 +214,6 @@ class RuleBot {
                 //TODO broadcast this message to any recipients
                 if (session.userData.biolog.admin.conversingWith != "bot") return session.endDialog();
 
-                // if (!qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
-                //     session.send("I have no more questions.");
-                //     return session.endDialog();
-                // }
-
                 //loop back and do next item in queue
                 session.replaceDialog("/converse", { reprompt: true });
             }
@@ -253,6 +231,7 @@ class RuleBot {
 
     restartConversation(session) {
         // console.log("\n\nRRRRRRRRRRRRRRR restartConversation");
+
         session.userData.biolog = {
             admin: {
                 botPaused: false
@@ -272,6 +251,24 @@ class RuleBot {
                 queue: []
             }
         };
+
+        this.updatePatientData(session);
+    }
+
+    updatePatientData(session) {
+        /*  TODO
+            Load these resources from the FHIR DB and construct a Document containing all this info
+            1. Demographics - age, biological sex, 
+            2. QuestionnaireResponses
+            3. Observations
+            4. Diagnoses
+            5. Medications
+            6. Events/hospitalizations/encounters
+            7. Allergies/Intolerances
+            8. Goals
+            9. Flags
+        */
+
     }
 }
 

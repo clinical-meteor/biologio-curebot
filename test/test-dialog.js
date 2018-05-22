@@ -7,7 +7,7 @@
     const Tester = require('./Tester');
     const RuleBot = require('../js/rules/RuleBot');
     const Ruler = require('../js/rules/Ruler');
-    const dialogOnboard = require('./dialog/dialog-onboard');
+    const testDialog = require('./dialog/dialog-diabetes');
     const GSheetImporter = require('../js/importer/GSheetImporter');
     const DBUtil = require('../js/server/DBUtil');
     // const rules = require('biolog_rules');
@@ -42,7 +42,7 @@
 
             self.ruler = new Ruler(json);
             self.ruleBot = new RuleBot(self.connector, self.ruler, DBUtil.saveCommunication, {refresh: true});
-            Tester.testBot(self.ruleBot.bot, dialogOnboard, done);
+            Tester.testBot(self.ruleBot.bot, testDialog, done);
           });
         });
       });
