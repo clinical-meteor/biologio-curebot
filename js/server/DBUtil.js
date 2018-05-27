@@ -152,7 +152,7 @@ class DBUtil {
     }
 
     static createQuestionnaireResponse(question, communicationResource) {
-        let displayText = question.label? question.label:q.text;
+        let displayText = question.label? question.label: question.text;
         displayText += ": " + communicationResource.payload[0].contentString;
         let valueObj = DBUtil.getStructuredValue(question, communicationResource);
         let qr = {
