@@ -96,7 +96,7 @@ class DBUtil {
                     db.close();
                     return;
                 }
-                console.log("++++++++++++++++++ Inserted communicationResource=", JSON.stringify(communicationResource));
+                console.log("ICICICICICICICICICICIC Inserted communicationResource=", JSON.stringify(communicationResource));
                 
 
                 db.close();
@@ -129,7 +129,7 @@ class DBUtil {
                             db.close();
                             return;
                         }
-                        console.log("Inserted QuestionnaireResponse=", JSON.stringify(qr));
+                        console.log("IQRIQRIQRIQRIQRIQRIQRIQR Inserted QuestionnaireResponse=", JSON.stringify(qr));
                         db.close();
                     });
                 });
@@ -152,7 +152,7 @@ class DBUtil {
     }
 
     static createQuestionnaireResponse(question, communicationResource) {
-        let displayText = q.label? q.label:q.text;
+        let displayText = question.label? question.label:q.text;
         displayText += ": " + communicationResource.payload[0].contentString;
         let valueObj = DBUtil.getStructuredValue(question, communicationResource);
         let qr = {

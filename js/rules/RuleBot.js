@@ -12,6 +12,9 @@ class RuleBot {
         var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
 
         let self = this;
+        if (!self.settings) {
+            self.settings = {refresh: false};
+        }
         // if (!RuleBot.ruler) ruler = ruler;
         this.bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);
 
