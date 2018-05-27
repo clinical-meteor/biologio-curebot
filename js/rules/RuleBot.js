@@ -15,26 +15,61 @@ class RuleBot {
         // if (!RuleBot.ruler) ruler = ruler;
         this.bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);
 
+        //log messages
+        this.bot.use({
+            botbuilder: function (session, next) {
+                let biologData = session.userData.biolog;
+                console.log("IIIIIIIIIIIIIIIIII INCOMING: \"" + session.message.text + "\"");
+                let messageLC = "";
+                let theText = session.message.text + "";
+                if (theText) messageLC = theText.toLowerCase();
+                let shouldRefresh = ((self.settings && self.settings.refresh) || (session && session.message && 
+                    (messageLC == "help" || messageLC == "menu" || messageLC == "start over")));
+                if (shouldRefresh) {
+                    self.settings.refresh = false;
+                    try {
+                        session.reset(session.message.address.conversation.id);
+                    } catch(err) {
+                        //conversation does not exist, ok
+                    }
+                    session.userData.biolog = {};
+                }
+                console.log("INCOMING Biolog Data:", biologData);
+                let replyDate = session.message.timestamp;
+                next();
+            },
+            send: function (event, next) {
+                console.log("OOOOOOOOOOOOOOOOOO OUTGOING:", event);
+                next();
+            }
+        });
+
         this.bot.dialog('/', [
             (session, results, next) => {
-                session.endDialog();
+                console.log("\n\n111111111111111111111 this.settings=", this.settings);
+                // session.reset();
+                this.restartConversation(session);
                 session.beginDialog('/converse');
             }
         ]);
 
         this.bot.dialog("/converse", [
             (session, results, next) => {
-                // console.log("\n\n111111111111111111111 this.settings=", this.settings);
+                console.log("\n\nC1C1C1C1C1C1C1C1C1C1C1 CONVERSE: this.settings=", this.settings);
 
                 
-                if (session && session.message && session.message.text == "hi bot") session.userData.biolog = {};
-                if (!session.userData.biolog || !session.userData.biolog.admin) {
-                    this.restartConversation(session);
-                }
-                if (this.settings && this.settings.refresh) {
-                    this.settings.refresh = false;
-                    this.restartConversation(session);
-                }
+                // if (session && session.message && session.message.text == "hi bot") session.userData.biolog = {};
+                // if (!session.userData.biolog || !session.userData.biolog.admin) {
+                //     // session.endConversation();
+
+                //     return session.beginDialog("/");
+                //     // this.restartConversation(session);
+                // }
+                // if (this.settings && this.settings.refresh) {
+                //     this.settings.refresh = false;
+                //     // this.restartConversation(session);
+                //     return session.beginDialog("/");
+                // }
 
                 //TODO broadcast this message to any recipients
                 if (session.userData.biolog.admin.conversingWith != "bot") return session.endConversation();
@@ -42,14 +77,18 @@ class RuleBot {
                 let qData = session.userData.biolog.qData;
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     // console.log("No queue in memory: query the Ruler.  pt answers=", session.userData.biolog.data.answers);
-                    qData = ruler.applyRules(session.userData.biolog.data);
+                    let newQData = ruler.applyRules(session.userData.biolog.data);
                     // console.log("\n\n AAAAAAAAAAAAAAAAAA Applied rules. qData=", qData);
-                    if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
+                    if (!newQData || !newQData.queue || newQData.queue.length < 1 || !newQData.queue[0].question) {
                         return next();
                     }
-                    session.userData.biolog.qData = qData;
-                    // console.log("Applied rules, results=", qData);
+                    session.userData.biolog.qData = newQData;
+                    qData = newQData;
+                    // console.log("RRRRRRRRRRRRRRRRRRRRRRR Applied rules, results=", qData);
+
                 }
+                console.log("QQQQQQQQQQQQQQQQQQQQQQQ Queue=", qData.queue);
+                console.log("\n\n");
                 let qItem = qData.queue[0];
                 qData.currentQuestion = qData.questions[qItem.question];
                 let question = qData.questions[qItem.question];
@@ -62,14 +101,15 @@ class RuleBot {
 
                 if (question.formtype == "number" || question.formtype == "integer") {
                     console.log("################ formtype=", question.formtype);
-                    if (dbCallback) dbCallback(session, qObj);
                     builder.Prompts.number(session, question.text);
+                    if (dbCallback) dbCallback(session, qObj);
                 }
+                else 
                 if (question.formtype == "confirm") {
                     if (dbCallback) dbCallback(session, qObj);
                     builder.Prompts.confirm(session, question.text);
                 }
-                if (question.formtype == "choice") {
+                else if (question.formtype == "choice") {
                     let choicesStr = question.choices + '';
                     let choicesObj = {};
                     let choices = choicesStr.split(";");
@@ -122,22 +162,22 @@ class RuleBot {
             },
             (session, results, next) => {
                 
-                // console.log("\n\n2222222222222222222222222 session.userData.biolog.data=", JSON.stringify(session.userData.biolog.data));
+                console.log("\n\nC2C2C2C2C2C2C2C2C2C2C2 session.userData.biolog.data=", JSON.stringify(session.userData.biolog.data));
                 let qData = session.userData.biolog.qData;
 
-                let refresh = (session && session.message && session.message.text == "hi bot");
-                if (refresh || (this.settings && this.settings.refresh)) {
-                    this.settings.refresh = false;
-                    this.restartConversation(session);
-                    return session.replaceDialog("/converse", { reprompt: true });
-                }
+                // let refresh = (session && session.message && session.message.text == "hi bot");
+                // if (refresh || (this.settings && this.settings.refresh)) {
+                //     this.settings.refresh = false;
+                //     this.restartConversation(session);
+                //     // return session.replaceDialog("/converse", { reprompt: true });
+                // }
 
                 
 
                 if (!qData || !qData.queue || qData.queue.length < 1 || !qData.queue[0].question) {
                     //no further questions your honor
                     session.send("I have no more questions.");
-                    return setTimeout(function() { session.endConversation() }, 2000);
+                    return setTimeout(function() { session.endConversation() }, 5000);
                 }
 
                 let qItem = qData.queue[0];

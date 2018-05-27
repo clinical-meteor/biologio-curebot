@@ -16,7 +16,7 @@
     
 
     describe('test-dialog', () => {
-      it('dialog-onboard', function (done) { 
+      it('test dialog', function (done) { 
         this.timeout(60000); 
         let self = this;
         self.connector = new builder.ConsoleConnector();

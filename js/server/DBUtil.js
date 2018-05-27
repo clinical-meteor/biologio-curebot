@@ -9,6 +9,8 @@ const chrono = require('chrono-node');
 class DBUtil {
     
     static saveCommunication(session, messageInfo) {
+        // return; //TODO remove this!!!!!!!!!!!
+
         if (messageInfo.received) {
             messageInfo.sent = new Date().toISOString();
             // messageInfo.received = new Date(messageInfo.received).toISOString();
@@ -94,38 +96,49 @@ class DBUtil {
                     db.close();
                     return;
                 }
-                console.log("Inserted communicationResource=", JSON.stringify(communicationResource));
+                console.log("++++++++++++++++++ Inserted communicationResource=", JSON.stringify(communicationResource));
+                
+
                 db.close();
+
+                console.log("messageInfo=", messageInfo);
+                if (messageInfo.type != "in") return;
+                console.log("store QR");
+
+                //Next save any other resources specified by this question.
+                let qData = session.userData.biolog.qData;
+                let q = qData.currentQuestion;
+                // if (q.setproperty) {
+                //     session.userData.biolog[q.setproperty] = messageInfo.text;
+                //     //TODO other data types
+                // }
+
+                // let answerInfo = DBUtil.getAnswerInfo(qData, communicationResource);
+                let qr = DBUtil.createQuestionnaireResponse(q, communicationResource);
+
+                console.log("\n\nDBUtil.js: Saving QuestionnaireResponse:", qr);
+
+                //save the QuestionnaireResponse object
+                mongoClient.connect(ChatbotConfig.mongoDBUrl, function (err, db) {
+                    if (err) return console.error("Error connecting to DB", err);
+                    db.collection('QuestionnaireResponses').insertOne(qr, function(err, result) {
+                        // assert.equal(err, null);
+                        if (err) {
+                            console.log("ERROR inserting QuestionnaireResponse:", err);
+                            assert(false);
+                            db.close();
+                            return;
+                        }
+                        console.log("Inserted QuestionnaireResponse=", JSON.stringify(qr));
+                        db.close();
+                    });
+                });
             });
         });
 
-        if (messageInfo.type != "in") return;
-        //Next save any other resources specified by this question.
-        let qData = session.userData.biolog.qData;
-        let q = qData.currentQuestion;
-        if (q.setproperty) {
-            session.userData.biolog[q.setproperty] = messageInfo.text;
-            //TODO other data types
-        }
+        // console.log("mmmmmmmmmmmmmmm messageInfo=", messageInfo);
 
-        let answerInfo = DBUtil.getAnswerInfo(qData, communicationResource);
-        let qr = DBUtil.createQuestionnaireResponse(q, communicationResource);
-
-        //save the QuestionnaireResponse object
-        mongoClient.connect(ChatbotConfig.mongoDBUrl, function (err, db) {
-            if (err) return console.error("Error connecting to DB", err);
-            db.collection('QuestionnaireResponses').insertOne(qr, function(err, result) {
-                // assert.equal(err, null);
-                if (err) {
-                    console.log("ERROR inserting QuestionnaireResponse:", err);
-                    assert(false);
-                    db.close();
-                    return;
-                }
-                console.log("Inserted QuestionnaireResponse=", JSON.stringify(qr));
-                db.close();
-            });
-        });
+        
 
         // if (q.lookup) {
         //     //TODO lookup the answer, build answerInfo
