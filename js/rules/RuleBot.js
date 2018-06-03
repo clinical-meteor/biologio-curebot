@@ -37,7 +37,7 @@ class RuleBot {
                     }
                     session.userData.biolog = {};
                 }
-                console.log("INCOMING Biolog Data:", biologData);
+                // console.log("INCOMING Biolog Data:", biologData);
                 let replyDate = session.message.timestamp;
                 next();
             },

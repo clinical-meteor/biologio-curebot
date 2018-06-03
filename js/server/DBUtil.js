@@ -163,7 +163,8 @@ class DBUtil {
                 div: displayText
             },
             questionnaire: {
-                reference: question.id
+                reference: question.id,
+                display: question.text
             },
             status: "completed",
             subject: communicationResource.subject,
@@ -183,7 +184,7 @@ class DBUtil {
         if (question.formtype == "integer") {
             obj.valueInteger = parseInt(str);
         }
-        if (question.formtype == "decimal") {
+        if (question.formtype == "number") {
             obj.valueDecimal = Number.parseFloat(str);
         }
         if (question.formtype == "yesno") {
